@@ -8,9 +8,9 @@
         char label[32];                                                \
         for (c = 0; c <= UCHAR_MAX; c++) {                             \
             snprintf(label, sizeof(label), "character %d", c);        \
-            CHECK_INT((test_name), label, (libc_fn(c) != 0), (ft_fn(c) != 0)); \
+            CHECK_INT((test_name), label, (libc_fn(c) != 0), ft_fn(c)); \
         }                                                              \
-        CHECK_INT((test_name), "EOF", (libc_fn(EOF) != 0), (ft_fn(EOF) != 0)); \
+        CHECK_INT((test_name), "EOF", (libc_fn(EOF) != 0), ft_fn(EOF)); \
     } while (0)
 
 void test_ft_isalpha(int *passed)
@@ -36,7 +36,7 @@ void test_ft_isascii(int *passed)
     for (c = -1; c <= UCHAR_MAX; c++)
     {
         snprintf(label, sizeof(label), "character %d", c);
-        CHECK_INT("ft_isascii", label, (c >= 0 && c <= 127), (ft_isascii(c) != 0));
+        CHECK_INT("ft_isascii", label, (c >= 0 && c <= 127), ft_isascii(c));
     }
 }
 

@@ -2,8 +2,9 @@
 
 int main(void)
 {
-    puts("\n=== LIBFT TESTS ===");
-    puts("\nCharacter functions:");
+    puts("\n=== LIBFT : 43 fonctions ===");
+
+    puts("\nCaracteres :");
     run_test(test_ft_isalpha, "ft_isalpha");
     run_test(test_ft_isdigit, "ft_isdigit");
     run_test(test_ft_isalnum, "ft_isalnum");
@@ -12,7 +13,7 @@ int main(void)
     run_test(test_ft_toupper, "ft_toupper");
     run_test(test_ft_tolower, "ft_tolower");
 
-    puts("\nString functions:");
+    puts("\nChaines :");
     run_test(test_ft_strlen, "ft_strlen");
     run_test(test_ft_strchr, "ft_strchr");
     run_test(test_ft_strrchr, "ft_strrchr");
@@ -28,11 +29,11 @@ int main(void)
     run_test(test_ft_strmapi, "ft_strmapi");
     run_test(test_ft_striteri, "ft_striteri");
 
-    puts("\nNumber functions:");
+    puts("\nNombres :");
     run_test(test_ft_atoi, "ft_atoi");
     run_test(test_ft_itoa, "ft_itoa");
 
-    puts("\nMemory functions:");
+    puts("\nMemoire :");
     run_test(test_ft_memset, "ft_memset");
     run_test(test_ft_bzero, "ft_bzero");
     run_test(test_ft_memcpy, "ft_memcpy");
@@ -41,14 +42,13 @@ int main(void)
     run_test(test_ft_memcmp, "ft_memcmp");
     run_test(test_ft_calloc, "ft_calloc");
 
-    puts("\nFile descriptor functions:");
+    puts("\nEcriture :");
     run_test(test_ft_putchar_fd, "ft_putchar_fd");
     run_test(test_ft_putstr_fd, "ft_putstr_fd");
     run_test(test_ft_putendl_fd, "ft_putendl_fd");
     run_test(test_ft_putnbr_fd, "ft_putnbr_fd");
 
-#ifdef TEST_BONUS
-    puts("\nBonus: linked lists:");
+    puts("\nListes chainees :");
     run_test(test_ft_lstnew, "ft_lstnew");
     run_test(test_ft_lstadd_front, "ft_lstadd_front");
     run_test(test_ft_lstadd_back, "ft_lstadd_back");
@@ -58,6 +58,5 @@ int main(void)
     run_test(test_ft_lstclear, "ft_lstclear");
     run_test(test_ft_lstiter, "ft_lstiter");
     run_test(test_ft_lstmap, "ft_lstmap");
-#endif
     return test_summary();
 }

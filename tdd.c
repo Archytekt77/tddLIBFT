@@ -1,4 +1,9 @@
 #include "tdd.h"
+#ifndef _WIN32
+# include <errno.h>
+# include <signal.h>
+# include <sys/wait.h>
+#endif
 
 static int g_tests_run = 0;
 static int g_tests_failed = 0;
@@ -103,23 +108,88 @@ void check_true(const char *fn, const char *case_name,
 void run_test(void (*test_func)(int *), const char *name)
 {
     int passed = 1;
+#ifndef _WIN32
+    int fd[2];
+    int report[2];
+    int status;
+    pid_t child;
+    pid_t waited;
+#endif
 
-    printf("%-22s", name);
-    fflush(stdout);
-    test_func(&passed);
     g_tests_run++;
+#ifndef _WIN32
+    fflush(NULL);
+    if (pipe(fd) != 0)
+    {
+        perror("pipe du testeur");
+        g_tests_failed++;
+        return;
+    }
+    child = fork();
+    if (child == 0)
+    {
+        close(fd[0]);
+        alarm(3);
+        g_assertions = 0;
+        test_func(&passed);
+        report[0] = passed;
+        report[1] = g_assertions;
+        if (write(fd[1], report, sizeof(report)) != (ssize_t)sizeof(report))
+            passed = 0;
+        close(fd[1]);
+        fflush(NULL);
+        _exit(!passed);
+    }
+    close(fd[1]);
+    if (child < 0)
+    {
+        close(fd[0]);
+        perror("fork du testeur");
+        g_tests_failed++;
+        return;
+    }
+    do {
+        waited = waitpid(child, &status, 0);
+    } while (waited < 0 && errno == EINTR);
+    if (waited < 0)
+    {
+        close(fd[0]);
+        perror("waitpid du testeur");
+        g_tests_failed++;
+        return;
+    }
+    if (WIFSIGNALED(status))
+    {
+        close(fd[0]);
+        printf("%-22s%s (signal %d)\n", name,
+                WTERMSIG(status) == SIGALRM ? "TIMEOUT" : "CRASH",
+                WTERMSIG(status));
+        g_tests_failed++;
+        return;
+    }
+    passed = 0;
+    if (read(fd[0], report, sizeof(report)) == (ssize_t)sizeof(report))
+    {
+        passed = report[0] && WIFEXITED(status) && WEXITSTATUS(status) == 0;
+        g_assertions += report[1];
+    }
+    close(fd[0]);
+#else
+    test_func(&passed);
+#endif
+    printf("%-22s", name);
     if (passed)
-        printf("\033[32mPASS\033[0m\n");
+        printf("OK\n");
     else
     {
-        printf("\033[31mFAIL\033[0m\n");
+        printf("KO\n");
         g_tests_failed++;
     }
 }
 
 int test_summary(void)
 {
-    printf("\nResults: %d/%d functions passed, %d assertions checked.\n",
+    printf("\nBilan : %d/%d fonctions OK, %d verifications effectuees.\n",
             g_tests_run - g_tests_failed, g_tests_run, g_assertions);
     return (g_tests_failed != 0);
 }

@@ -1,54 +1,43 @@
-NAME        := test_libft
-BONUS_NAME  := test_libft_bonus
-LIBFT_DIR   ?= ../Libft
+NAME       := test_libft
+# Dossier de ta Libft : a modifier ici si elle est ailleurs.
+LIBFT_DIR  ?= ../Libft
 LIBFT      := $(LIBFT_DIR)/libft.a
-CC          := cc
-CFLAGS      := -Wall -Wextra -Werror -std=c99
-CPPFLAGS    := -I. -I$(LIBFT_DIR)
-OBJ_DIR     := .obj
+CC         := cc
+CFLAGS     := -Wall -Wextra -Werror
+CPPFLAGS   := -I. -I$(LIBFT_DIR)
+OBJ_DIR    := .obj
 
 SRC := main.c tdd.c character_functions_tests.c string_functions_tests.c \
-       number_functions_tests.c memory_functions_tests.c writing_functions_tests.c
+       number_functions_tests.c memory_functions_tests.c \
+       writing_functions_tests.c list_functions_tests.c
+OBJ := $(addprefix $(OBJ_DIR)/,$(SRC:.c=.o))
 
-OBJ       := $(addprefix $(OBJ_DIR)/mandatory/,$(SRC:.c=.o))
-BONUS_OBJ := $(addprefix $(OBJ_DIR)/bonus/,$(SRC:.c=.o)) $(OBJ_DIR)/bonus/bonus_tests.o
+.DEFAULT_GOAL := all
+.PHONY: all run clean fclean re
 
-.PHONY: all libft libft_bonus bonus test test_bonus run run_bonus clean fclean re
+all:
+	@$(MAKE) --no-print-directory -C "$(LIBFT_DIR)"
+	@$(MAKE) --no-print-directory $(NAME)
 
-all: $(NAME)
-
-libft:
-	$(MAKE) -C $(LIBFT_DIR)
-
-libft_bonus:
-	$(MAKE) -C $(LIBFT_DIR) bonus
-
-$(NAME): $(OBJ) libft
+$(NAME): $(OBJ) $(LIBFT)
 	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -o $@
 
-$(BONUS_NAME): $(BONUS_OBJ) libft_bonus
-	$(CC) $(CFLAGS) $(BONUS_OBJ) $(LIBFT) -o $@
+$(LIBFT):
+	@$(MAKE) --no-print-directory -C "$(LIBFT_DIR)"
 
-$(OBJ_DIR)/mandatory/%.o: %.c tdd.h
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+$(OBJ_DIR)/%.o: %.c tdd.h $(LIBFT_DIR)/libft.h Makefile
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/bonus/%.o: %.c tdd.h
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -DTEST_BONUS -c $< -o $@
-
-bonus: $(BONUS_NAME)
-
-test run: $(NAME)
-	./$(NAME)
-
-test_bonus run_bonus: $(BONUS_NAME)
-	./$(BONUS_NAME)
+run: all
+	@./$(NAME)
 
 clean:
 	rm -rf $(OBJ_DIR)
 
 fclean: clean
-	rm -f $(NAME) $(BONUS_NAME)
+	rm -f $(NAME)
 
-re: fclean all
+re:
+	@$(MAKE) --no-print-directory fclean
+	@$(MAKE) --no-print-directory all

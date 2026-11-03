@@ -1,6 +1,5 @@
 #include "tdd.h"
 
-#ifdef TEST_BONUS
 static int g_delete_count = 0;
 
 static t_list *make_node(int *value)
@@ -174,6 +173,8 @@ void test_ft_lstlast(int *passed)
 void test_ft_lstdelone(int *passed)
 {
     t_list *node = make_node(heap_int(42));
+    int value = 7;
+    t_list next = {&value, NULL};
 
     if (!node || !node->content)
     {
@@ -183,9 +184,12 @@ void test_ft_lstdelone(int *passed)
         free(node);
         return;
     }
+    node->next = &next;
     g_delete_count = 0;
     ft_lstdelone(node, del_count);
     CHECK_INT("ft_lstdelone", "deletion callback once", 1, g_delete_count);
+    CHECK_INT("ft_lstdelone", "next content untouched", 7, value);
+    CHECK_PTR("ft_lstdelone", "next node untouched", &value, next.content);
 }
 
 void test_ft_lstclear(int *passed)
@@ -209,6 +213,9 @@ void test_ft_lstclear(int *passed)
     ft_lstclear(&head, del_count);
     CHECK_PTR("ft_lstclear", "head reset", NULL, head);
     CHECK_INT("ft_lstclear", "all content freed", 2, g_delete_count);
+    ft_lstclear(&head, del_count);
+    CHECK_PTR("ft_lstclear", "empty list remains NULL", NULL, head);
+    CHECK_INT("ft_lstclear", "empty list no callback", 2, g_delete_count);
 }
 
 void test_ft_lstiter(int *passed)
@@ -265,6 +272,7 @@ void test_ft_lstmap(int *passed)
             CHECK_PTR("ft_lstmap", "list terminator", NULL, mapped->next->next);
         }
         CHECK_TRUE("ft_lstmap", "independent nodes", mapped != first);
+        CHECK_TRUE("ft_lstmap", "independent content", mapped->content != first->content);
         ft_lstclear(&mapped, del_count);
     }
     CHECK_INT("ft_lstmap", "original first unchanged", 3, a);
@@ -272,4 +280,3 @@ void test_ft_lstmap(int *passed)
     free(second);
     free(first);
 }
-#endif

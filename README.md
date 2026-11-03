@@ -1,47 +1,50 @@
-# Libft TDD - corrected tests
+# Testeur Libft
 
-This is a stand-alone test program. It does **not** modify your Libft.
+Testeur en C pour les **43 fonctions du sujet v19.3**, listes chaînées comprises.
+Toutes les fonctions sont obligatoires.
 
-Expected directory layout (default):
+## Utilisation
 
-```
-work/
+Place ta bibliothèque dans le dossier `Libft` à côté de `TDDLibft` :
+
+```text
 ├── Libft/
 │   ├── Makefile
 │   ├── libft.h
 │   └── ft_*.c
-└── Libft_TDD_corrige/
-    ├── Makefile
-    ├── main.c
-    ├── tdd.h
-    └── *_tests.c
+└── TDDLibft/
 ```
 
-Commands:
+Depuis `TDDLibft` :
 
 ```sh
-make                # build mandatory tests (compiles libft.a first)
-make test           # build + execute mandatory tests
-make bonus          # build tests for mandatory + bonus functions
-make test_bonus     # build + execute mandatory + bonus tests
-make fclean
+make
+make run
 ```
 
-If your library folder is named `libft` or located elsewhere:
+`make` compile la bibliothèque et le testeur. `make run` lance tous les tests
+et affiche un bilan. Les sources de ta bibliothèque ne sont pas modifiées.
 
-```sh
-make test LIBFT_DIR=../libft
-make test_bonus LIBFT_DIR=/absolute/path/to/libft
-```
+Si ta Libft est ailleurs, change simplement `LIBFT_DIR` en haut du Makefile,
+une fois. Ensuite, utilise toujours `make` et `make run`.
 
-The standard 42 Libft contains 34 mandatory functions and 9 bonus functions.
-The bonus build assumes your Libft implements a `bonus` Makefile target.
-Tests compare equivalent libc behavior for applicable functions; others have
-explicit expected outputs. `ft_strncmp` and `ft_memcmp` are checked by sign,
-not by a particular positive/negative magnitude.
+Prérequis : Linux, un compilateur C et `make`. Aucun Python nécessaire.
 
-Note: A PASS does not prove absence of memory leaks or undefined behavior.
-If installed, run `valgrind --leak-check=full --track-origins=yes ./test_libft`
-and `valgrind --leak-check=full --track-origins=yes ./test_libft_bonus`.
-Test binaries, build artifacts, and the third-party `LibftTester` were omitted
-from this repaired package.
+## Résultats
+
+- `OK` : les cas testés passent.
+- `KO` : une vérification échoue, avec le détail attendu / obtenu.
+- `CRASH` : la fonction plante ; les autres tests continuent.
+- `TIMEOUT` : la fonction dépasse le délai de 3 secondes ; les tests continuent.
+
+Le sujet v19.3 exige notamment des retours `0` ou `1` pour les classifications,
+un pointeur non nul et libérable pour `calloc` avec une taille nulle, et le
+prototype `unsigned int ft_lstsize(t_list *lst)`. Les prototypes incompatibles
+sont signalés à la compilation. Les 43 fonctions doivent être intégrées dans
+la cible par défaut de ta Libft ; aucune cible bonus n’est appelée.
+
+`make clean` nettoie les objets du testeur, `make fclean` supprime aussi son
+exécutable. Ces commandes ne nettoient pas ta Libft.
+
+Les tests ne remplacent pas la Norm ou une vérification mémoire avec Valgrind.
+Les échecs de `malloc` ne sont pas simulés.

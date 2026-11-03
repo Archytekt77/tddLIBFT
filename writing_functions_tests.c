@@ -1,6 +1,12 @@
 #include "tdd.h"
 #include <errno.h>
 
+#ifdef _WIN32
+# include <io.h>
+# include <fcntl.h>
+# define pipe(fd) _pipe((fd), 4096, _O_BINARY)
+#endif
+
 /* A pipe verifies both the exact output and the supplied file descriptor. */
 static void check_fd_output(const char *fn, const char *label,
         const char *expected, void (*write_fn)(int), int *passed)

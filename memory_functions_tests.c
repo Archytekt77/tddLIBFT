@@ -114,8 +114,15 @@ void test_ft_calloc(int *passed)
         CHECK_TRUE("ft_calloc", "zeroed bytes", all_zero);
         free(p);
     }
-    /* calloc(0, n) may legally return either NULL or a freeable pointer. */
+    /* Subject v19.3 requires a non-NULL, freeable pointer for zero sizes. */
     p = ft_calloc(0, 8);
+    CHECK_TRUE("ft_calloc", "zero count allocation", p != NULL);
+    free(p);
+    p = ft_calloc(8, 0);
+    CHECK_TRUE("ft_calloc", "zero size allocation", p != NULL);
+    free(p);
+    p = ft_calloc(0, 0);
+    CHECK_TRUE("ft_calloc", "both zero allocation", p != NULL);
     free(p);
     p = ft_calloc(SIZE_MAX, 2);
     CHECK_PTR("ft_calloc", "multiplication overflow", NULL, p);
